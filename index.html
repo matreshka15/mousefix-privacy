@@ -101,14 +101,14 @@
 
 <header>
   <h1>MouseFix 隐私政策</h1>
-  <p class="meta">生效日期：2026 年 11 月 13 日 · 版本 1.0</p>
+  <p class="meta">生效日期：2026 年 11 月 13 日 · 版本 1.1</p>
   <p class="lang"><a href="#zh">中文</a><a href="#en">English</a></p>
 </header>
 
 <div class="lede">
   <p><strong>三句话：</strong>MouseFix 不收集你的数据，不联网，不需要账号。</p>
   <p>它会读鼠标按键的类型、时间和光标位置，只为了判断一次点击是不是抖动；读完就丢，不记录、不上传、不截屏。</p>
-  <p>设置存在你自己的电脑上，卸载时删除。</p>
+  <p>设置存在你自己的电脑上：商店版卸载时由 Windows 删除，便携版需要手动删掉 <code>HKCU\Software\MouseFix</code>。</p>
 </div>
 
 <section id="zh">
@@ -130,7 +130,7 @@
 <h2>三、全局鼠标钩子读什么</h2>
 <p>过滤误点击必须在本应用里截获鼠标事件，这是本应用唯一的核心功能。它通过 Windows 公开的 <code>SetWindowsHookEx(WH_MOUSE_LL)</code> 接口读取以下字段：</p>
 <ul>
-  <li>按键类型：左键、右键、中键、X1、X2、滚轮。</li>
+  <li>按键类型：左键、右键、中键、侧键 1、侧键 2、滚轮。</li>
   <li>事件类型：按下、松开、滚轮滚动方向。</li>
   <li>事件时间戳。</li>
   <li>光标在屏幕上的坐标。</li>
@@ -141,8 +141,8 @@
 <p>本应用不截屏，不读取窗口标题，不读取控件内容，不向其他进程注入代码。</p>
 
 <h2>四、拦下的事件和统计</h2>
-<p>托盘菜单顶部会显示「已经拦下多少事件」。这个数字只存在内存里，退出即清零，也可以手动点「Reset Statistics」清零。它不包含事件内容，也不上传。</p>
-<p>拖拽保护会短暂压住一次松开事件（最多 150 毫秒），确认后面没有连续抖动后，再通过 Windows 的 <code>SendInput</code> 接口补发这次松开。补发的是你原本就按下并松开的那个按键，不包含额外信息。</p>
+<p>托盘菜单顶部会显示「已经拦下多少事件」。这个数字只存在内存里，退出即清零，也可以手动点「清零统计」清零。它不包含事件内容，也不上传。</p>
+<p>拖拽保护会短暂压住一次松开事件（约 50 毫秒），确认后面没有连续抖动后，再通过 Windows 的 <code>SendInput</code> 接口补发这次松开。补发的是你原本就按下并松开的那个按键，不包含额外信息。</p>
 
 <h2>五、设置存在哪里</h2>
 <p>设置只有三项：每个按键的阈值、每个按键是否启用、Smart Drag 是否开启。它们写在当前用户的注册表项：</p>
@@ -152,6 +152,7 @@
   <li><strong>Microsoft Store 版：</strong>按 MSIX 的注册表虚拟化规则，这些写入由 Windows 保存在应用自己的容器里，卸载应用时一并删除。</li>
   <li><strong>便携版：</strong>直接写入上述注册表项。删除 exe 不会清掉它，需要手动删除 <code>HKCU\Software\MouseFix</code>，或在注册表编辑器里删掉这一项。</li>
 </ul>
+<p>安装包还注册了一个开机启动项（MSIX 的 StartupTask），首次启动后默认开启，登录后过滤自动恢复。它不改动其他启动项；不想自启，在 Windows 的「任务管理器 → 启动」里关掉即可，设置不会丢。</p>
 
 <h2>六、网络</h2>
 <p>本应用不发起任何网络请求。没有检查更新（商店版由 Microsoft Store 负责更新），没有云同步，没有在线配置，没有埋点。断网和联网时功能完全一样。</p>
@@ -174,13 +175,13 @@
 
 <header>
   <h1>MouseFix Privacy Policy</h1>
-  <p class="meta">Effective 13 November 2026 · Version 1.0</p>
+  <p class="meta">Effective 13 November 2026 · Version 1.1</p>
 </header>
 
 <div class="lede">
   <p><strong>In three sentences:</strong> MouseFix collects nothing, connects to nothing, and requires no account.</p>
   <p>It reads the mouse button type, event time and cursor position only to decide whether a click is a bounce. The data is used in memory and discarded. Nothing is logged, uploaded or screenshotted.</p>
-  <p>Settings stay on your PC and are removed when you uninstall.</p>
+  <p>Settings stay on your PC: the Store version has them removed when you uninstall, while the portable build needs <code>HKCU\Software\MouseFix</code> deleted by hand.</p>
 </div>
 
 <h2>1. Scope</h2>
@@ -200,7 +201,7 @@
 <h2>3. What the global mouse hook reads</h2>
 <p>Filtering false clicks requires intercepting mouse events inside the app — that is its only core function. It uses the documented Windows API <code>SetWindowsHookEx(WH_MOUSE_LL)</code> and reads these fields:</p>
 <ul>
-  <li>Button: left, right, middle, X1, X2, wheel.</li>
+  <li>Button: left, right, middle, side 1, side 2, wheel.</li>
   <li>Event type: press, release, wheel direction.</li>
   <li>Event timestamp.</li>
   <li>Cursor position on screen.</li>
@@ -212,7 +213,7 @@
 
 <h2>4. Blocked-event count</h2>
 <p>The tray menu shows how many events have been blocked. That number lives in memory, resets when the app exits, and can be cleared with "Reset Statistics". It contains no event data and is never uploaded.</p>
-<p>Drag protection briefly holds back a release event (at most 150 ms), confirms that no burst of bounces follows, then re-issues that release through the Windows <code>SendInput</code> API. It re-issues the button you actually pressed and released, and carries no additional information.</p>
+<p>Drag protection briefly holds back a release event (about 50 ms), confirms that no burst of bounces follows, then re-issues that release through the Windows <code>SendInput</code> API. It re-issues the button you actually pressed and released, and carries no additional information.</p>
 
 <h2>5. Where settings are stored</h2>
 <p>There are three settings: the threshold for each button, whether each button is enabled, and whether Smart Drag is on. They are written to the current user's registry key:</p>
@@ -222,6 +223,7 @@
   <li><strong>Microsoft Store version:</strong> under MSIX registry virtualization, these writes are kept in the app's own container and removed by Windows when the app is uninstalled.</li>
   <li><strong>Portable version:</strong> writes go directly to the key above. Deleting the exe does not remove it; delete <code>HKCU\Software\MouseFix</code> manually, for example in Registry Editor.</li>
 </ul>
+<p>The package also registers a startup task (MSIX StartupTask), enabled by default after the first launch so filtering resumes after you sign in. It changes no other startup entries. To turn it off, use Task Manager &gt; Startup; your settings are kept.</p>
 
 <h2>6. Network</h2>
 <p>The app makes no network requests. There are no update checks (the Store version is updated by Microsoft Store), no cloud sync, no remote configuration and no analytics. It works the same online and offline.</p>
